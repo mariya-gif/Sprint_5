@@ -1,0 +1,5 @@
+MAIN_URL = "https://stellarburgers.education-services.ru"
+LOGIN_URL = f"{MAIN_URL}/login"
+REGISTER_URL = f"{MAIN_URL}/register"
+FORGOT_PASSWORD_URL = f"{MAIN_URL}/forgot-password"
+ACCOUNT_URL = f"{MAIN_URL}/account"
