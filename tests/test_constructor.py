@@ -1,68 +1,28 @@
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
+import pytest
 
 from locators import ConstructorPageLocators
 from url import MAIN_URL
+from helpers import open_page, is_tab_active, click_tab
 
 
-def open_page(driver, url, attempts=2):
-    #Открывает страницу с одной повторной попыткой на случай,
-    #если сайт ответит с задержкой и страница не успеет загрузиться.
-    for attempt in range(attempts):
-        try:
-            driver.get(url)
-            return
-        except TimeoutException:
-            if attempt == attempts - 1:
-                raise
-
-
-def is_tab_active(tab_element):
-    #Проверяет, что у вкладки в классе присутствует tab_tab_type_current —
-    #признак того, что вкладка активна.
-    return "tab_tab_type_current" in tab_element.get_attribute("class")
-
-
-def click_tab(driver, tab_locator):
-    #Кликает по родительскому div вкладки через JavaScript — обходит
-    #перекрытие элементов, которое иногда возникает во время рендера страницы.
-    tab = WebDriverWait(driver, 10).until(
-        EC.presence_of_element_located(tab_locator)
-    )
-    tab_container = tab.find_element("xpath", "./..")
-    driver.execute_script("arguments[0].click();", tab_container)
-    return tab_container
+TABS = [
+    (ConstructorPageLocators.TAB_BUNS, "Булки"),
+    (ConstructorPageLocators.TAB_SAUCES, "Соусы"),
+    (ConstructorPageLocators.TAB_FILLINGS, "Начинки"),
+]
 
 
 class TestConstructor:
 
-    def test_buns_tab(self, driver):
-        #Переход на вкладку «Булки» делает её активной.
-        #«Булки» активна по умолчанию, поэтому сначала переключаемся
-        #на «Соусы», чтобы доказать, что клик реально меняет активную вкладку.
+    @pytest.mark.parametrize("tab_locator, tab_name", TABS)
+    def test_tab_becomes_active(self, driver, tab_locator, tab_name):
+        """Переход на вкладку делает её активной.
+        «Булки» активна по умолчанию, поэтому для надёжности сначала
+        переключаемся на «Соусы», чтобы доказать, что клик меняет
+        активную вкладку, а не просто видит уже активное состояние."""
         open_page(driver, MAIN_URL)
         click_tab(driver, ConstructorPageLocators.TAB_SAUCES)
 
-        tab_container = click_tab(driver, ConstructorPageLocators.TAB_BUNS)
+        tab_container = click_tab(driver, tab_locator)
 
-        WebDriverWait(driver, 10).until(lambda d: is_tab_active(tab_container))
-        assert is_tab_active(tab_container), "Вкладка «Булки» не стала активной"
-
-    def test_sauces_tab(self, driver):
-        #Переход на вкладку «Соусы» делает её активной.
-        open_page(driver, MAIN_URL)
-
-        tab_container = click_tab(driver, ConstructorPageLocators.TAB_SAUCES)
-
-        WebDriverWait(driver, 10).until(lambda d: is_tab_active(tab_container))
-        assert is_tab_active(tab_container), "Вкладка «Соусы» не стала активной"
-
-    def test_fillings_tab(self, driver):
-        #Переход на вкладку «Начинки» делает её активной.
-        open_page(driver, MAIN_URL)
-
-        tab_container = click_tab(driver, ConstructorPageLocators.TAB_FILLINGS)
-
-        WebDriverWait(driver, 10).until(lambda d: is_tab_active(tab_container))
-        assert is_tab_active(tab_container), "Вкладка «Начинки» не стала активной"
+        assert is_tab_active(tab_container), f"Вкладка «{tab_name}» не стала активной"

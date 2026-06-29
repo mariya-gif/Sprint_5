@@ -29,7 +29,7 @@ class RegisterPageLocators:
     PASSWORD_INPUT = (By.XPATH, "//label[text()='Пароль']/following-sibling::input")  # Поле Пароль на регистрации
     SUBMIT_BUTTON = (By.XPATH, "//button[text()='Зарегистрироваться']")  # Кнопка «Зарегистрироваться»
     LOGIN_LINK = (By.XPATH, "//a[text()='Войти']")  # Ссылка «Войти» на странице регистрации
-    ERROR_MESSAGE = (By.XPATH, "//p[contains(@class,'input__error')]")  # Текст ошибки валидации 
+    ERROR_MESSAGE = (By.XPATH, "//p[contains(@class,'input__error')]")  # Текст ошибки валидации
 
 
 class ForgotPasswordPageLocators:
@@ -44,7 +44,7 @@ class AccountPageLocators:
     LOGOUT_BUTTON = (By.XPATH, "//button[text()='Выход']")  # Кнопка «Выход» в личном кабинете
 
 
-class ConstructorPageLocators: 
+class ConstructorPageLocators:
     #Локаторы страницы конструктора бургеров (/).
 
     TAB_BUNS = (By.XPATH, "//div[contains(@class,'tab_tab')]//span[text()='Булки']")  # Вкладка «Булки»

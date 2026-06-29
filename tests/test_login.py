@@ -1,35 +1,9 @@
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 
-from locators import MainPageLocators, LoginPageLocators, RegisterPageLocators, ForgotPasswordPageLocators
+from locators import MainPageLocators, RegisterPageLocators, ForgotPasswordPageLocators
 from url import MAIN_URL, REGISTER_URL, FORGOT_PASSWORD_URL
-from data import Credentials
-
-
-def open_page(driver, url, attempts=2):
-    #Открывает страницу с одной повторной попыткой на случай,
-    #если сайт ответит с задержкой и страница не успеет загрузиться.
-    for attempt in range(attempts):
-        try:
-            driver.get(url)
-            return
-        except TimeoutException:
-            if attempt == attempts - 1:
-                raise
-
-
-def login_with_existing_user(driver):
-    #Вводит email/пароль существующего пользователя и нажимает «Войти»,
-    #затем ждёт появления кнопки «Оформить заказ» — признак успешного входа.
-    driver.find_element(*LoginPageLocators.EMAIL_INPUT).send_keys(Credentials.email)
-    driver.find_element(*LoginPageLocators.PASSWORD_INPUT).send_keys(Credentials.password)
-    driver.find_element(*LoginPageLocators.LOGIN_SUBMIT_BUTTON).click()
-
-    order_button = WebDriverWait(driver, 10).until(
-        EC.visibility_of_element_located(MainPageLocators.ORDER_BUTTON)
-    )
-    return order_button
+from helpers import open_page, login_with_existing_user
 
 
 class TestLogin:
